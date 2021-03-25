@@ -282,7 +282,7 @@ contract AliliceToken {
         return ROE_UNIT.mul(_virtualSupply).div(_virtualBalance.mul(2));
     }
     
-    function Token_price() public view returns (uint256) {
+    function Token_Price() public view returns (uint256) {
         return ROE_UNIT.mul(_virtualBalance).div(_virtualSupply.div(2));
     }
     
