@@ -256,7 +256,7 @@ contract AliliceToken {
     // TODO There is a strange problem here: 10**(_decimals) == 0, so 10**18 should be used instead !!!
     uint256 constant public BASE_UNIT = 10**18; // Do not use 10**(_decimals) !!!
     uint256 constant public BASE_AMOUNT = 100;
-    uint256 constant public INIT_PRICE = 1;
+    uint256 constant public INIT_PRICE = 1; // The amount of token 1 EHT could buy.
     uint256 constant public _baseBalance = BASE_AMOUNT * BASE_UNIT;
     uint256 constant public _baseSupply = _baseBalance * RCW * INIT_PRICE;
     uint256 public _virtualSupply = _baseSupply;
