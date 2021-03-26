@@ -350,6 +350,7 @@ contract AliliceToken {
      // TODO, JUST FOR TEST, DELETE THIS FUNCTION WHEN DEPLOYED IN PRODUCTION ENVIROMENT !!!
     function sellBurn(uint256 tknWei) public returns (uint256 ethWei) {
         ethWei = _sellBurn(tknWei, msg.sender);
+        // msg.sender.transfer(ethWei);
     }
     
     function() external payable {
