@@ -161,21 +161,18 @@ contract AliliceToken {
     mapping (address => bool) private _special;
     
     // TODO There is a strange problem here: 10**(_decimals) == 0, so we have to use 10**18 instead !!!
-    uint256 constant private _totalSupply = 10*(10**8)*(10**18); // Do not use (10**_decimals) !!!
-    uint256 private _bancorPool;
+    uint256 constant private _totalSupply = 2000*(10**4)*(10**18); // Do not use (10**_decimals) !!!
+    uint256 public bancorPool;
     address private _owner;
     
     constructor() public {
         _owner = msg.sender;
-        _bancorPool = 2*(10**8)*(10**18);
-        _balances[msg.sender] = _totalSupply - _bancorPool;
-    }
-    function name() public pure returns (string memory) {
-        return _name;
+        bancorPool = 20*(10**4)*(10**18);
+        _balances[msg.sender] = _totalSupply - bancorPool;
     }
     
-    function bancorPool() public view returns (uint256) {
-        return _bancorPool;
+    function name() public pure returns (string memory) {
+        return _name;
     }
     
     function symbol() public pure returns (string memory) {
@@ -258,19 +255,19 @@ contract AliliceToken {
     uint256 constant public BASE_AMOUNT = 100;
     uint256 constant public INIT_PRICE = 1; // The amount of token 1 EHT could buy.
     uint256 constant public RCW = 2;  // Reciprocal CW, CW is 0.5 (50%, 1/2).
-    uint256 constant public _baseBalance = BASE_AMOUNT * BASE_UNIT;
-    uint256 constant public _baseSupply = _baseBalance * RCW * INIT_PRICE;
-    uint256 public _virtualSupply = _baseSupply;
-    uint256 public _virtualBalance = _baseBalance;
+    uint256 constant public baseBalance = BASE_AMOUNT * BASE_UNIT;
+    uint256 constant public baseSupply = baseBalance * RCW * INIT_PRICE;
+    uint256 public virtualSupply = baseSupply;
+    uint256 public virtualBalance = baseBalance;
     uint256 constant public TO_INT = 1000000; // Price could be 0.abc..., it should be amplified by a big factor.
     
     
     function realSupply() public view returns (uint256) {
-        return _virtualSupply.sub(_baseSupply);
+        return virtualSupply.sub(baseSupply);
     }
     
     function realBanlance() public view returns (uint256) {
-        return _virtualBalance.sub(_baseBalance);
+        return virtualBalance.sub(baseBalance);
     }
     
     // TODO overflow test.
@@ -284,11 +281,11 @@ contract AliliceToken {
     }
     
     function PriceAsETH() public view returns (uint256) {
-        return TO_INT.mul(_virtualSupply).div(_virtualBalance.mul(2));
+        return TO_INT.mul(virtualSupply).div(virtualBalance.mul(2));
     }
     
     function PriceAsToken() public view returns (uint256) {
-        return TO_INT.mul(_virtualBalance).div(_virtualSupply.div(2));
+        return TO_INT.mul(virtualBalance).div(virtualSupply.div(2));
     }
     
     /*****************************************************************
@@ -302,10 +299,10 @@ contract AliliceToken {
     // This is because sell function retun eth value is less than precise value.
     // So it will Accumulate small amount of differences.
     function _bancorBuy(uint256 ethWei) internal returns (uint256 tknWei) {
-        uint256 savedSupply = _virtualSupply;
-        _virtualBalance = _virtualBalance.add(ethWei); //sum is new ethBlance.
-        _virtualSupply = sqrt(_baseSupply.mul(_baseSupply).mul(_virtualBalance).div(_baseBalance));
-        tknWei = _virtualSupply.sub(savedSupply);
+        uint256 savedSupply = virtualSupply;
+        virtualBalance = virtualBalance.add(ethWei); //sum is new ethBlance.
+        virtualSupply = sqrt(baseSupply.mul(baseSupply).mul(virtualBalance).div(baseBalance));
+        tknWei = virtualSupply.sub(savedSupply);
         if(ethWei == 0) { // to reduce Accumulated differences.
             tknWei = 0;
         }
@@ -320,11 +317,11 @@ contract AliliceToken {
            = ethBlance*(supply+delta)*(supply-delta)/(supply*supply)
     *****************************************************************/ 
     function _bancorSell(uint256 tknWei) internal returns (uint256 ethWei) {
-        uint256 delta = _virtualSupply.sub(tknWei);
-        require(delta >= _baseSupply);
-        ethWei = _virtualBalance.mul(_virtualSupply.add(delta)).mul(_virtualSupply.sub(delta)).div(_virtualSupply.mul(_virtualSupply));
-        _virtualSupply = _virtualSupply.sub(tknWei);
-        _virtualBalance = _virtualBalance.sub(ethWei);
+        uint256 delta = virtualSupply.sub(tknWei);
+        require(delta >= baseSupply);
+        ethWei = virtualBalance.mul(virtualSupply.add(delta)).mul(virtualSupply.sub(delta)).div(virtualSupply.mul(virtualSupply));
+        virtualSupply = virtualSupply.sub(tknWei);
+        virtualBalance = virtualBalance.sub(ethWei);
     }
     
     //=====================================================================================================================
@@ -332,14 +329,15 @@ contract AliliceToken {
     //=====================================================================================================================
     
     function _sellBurn(uint256 tknWei, address seller) internal returns (uint256 ethWei) {
-        ethWei = _bancorSell(tknWei);
         _balances[seller] = _balances[seller].sub(tknWei);
+        bancorPool = bancorPool.add(tknWei);
+        ethWei = _bancorSell(tknWei);
     }
     
     function _buyMint(uint256 ethWei, address buyer) internal returns (uint256 tknWei) {
-        tknWei = _bancorBuy(ethWei);
+        bancorPool = bancorPool.sub(tknWei);
         _balances[buyer] = _balances[buyer].add(tknWei);
-        _bancorPool = _bancorPool.sub(tknWei);
+        tknWei = _bancorBuy(ethWei);
     }
     
     // 100000000000000000000 wei == 100 ETH
