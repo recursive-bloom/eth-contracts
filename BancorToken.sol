@@ -161,17 +161,21 @@ contract AliliceToken {
     mapping (address => bool) private _special;
     
     // TODO There is a strange problem here: 10**(_decimals) == 0, so we have to use 10**18 instead !!!
-    uint256 constant private _totalSupply = 8*(10**8)*(10**18); // Do not use (10**_decimals) !!!
+    uint256 constant private _totalSupply = 10*(10**8)*(10**18); // Do not use (10**_decimals) !!!
     uint256 private _bancorPool;
     address private _owner;
     
     constructor() public {
         _owner = msg.sender;
         _bancorPool = 2*(10**8)*(10**18);
+        _balances[msg.sender] = _totalSupply - _bancorPool;
     }
-    
     function name() public pure returns (string memory) {
         return _name;
+    }
+    
+    function bancorPool() public view returns (uint256) {
+        return _bancorPool;
     }
     
     function symbol() public pure returns (string memory) {
@@ -257,7 +261,7 @@ contract AliliceToken {
     uint256 constant public _baseSupply = _baseBalance * RCW * INIT_PRICE;
     uint256 public _virtualSupply = _baseSupply;
     uint256 public _virtualBalance = _baseBalance;
-    uint256 constant public ROE_UNIT = 1000000; // Price could be 0.abc..., it should be amplified by a big factor.
+    uint256 constant public TO_INT = 1000000; // Price could be 0.abc..., it should be amplified by a big factor.
     uint256 constant public RCW = 2;  // Reciprocal CW, CW is 0.5 (50%, 1/2);
     
     function realSupply() public view returns (uint256) {
@@ -278,12 +282,12 @@ contract AliliceToken {
         }
     }
     
-    function ETH_Price() public view returns (uint256) {
-        return ROE_UNIT.mul(_virtualSupply).div(_virtualBalance.mul(2));
+    function PriceAsETH() public view returns (uint256) {
+        return TO_INT.mul(_virtualSupply).div(_virtualBalance.mul(2));
     }
     
-    function Token_Price() public view returns (uint256) {
-        return ROE_UNIT.mul(_virtualBalance).div(_virtualSupply.div(2));
+    function PriceAsToken() public view returns (uint256) {
+        return TO_INT.mul(_virtualBalance).div(_virtualSupply.div(2));
     }
     
     /*****************************************************************
@@ -337,6 +341,7 @@ contract AliliceToken {
         _bancorPool = _bancorPool.sub(tknWei);
     }
     
+    // 100000000000000000000 wei == 100 ETH
     // TODO, JUST FOR TEST, DELETE THIS FUNCTION WHEN DEPLOYED IN PRODUCTION ENVIROMENT!!!
     function buyMint(uint256 ethWei) public returns (uint256 tknWei) {
         tknWei = _buyMint(ethWei, msg.sender);
