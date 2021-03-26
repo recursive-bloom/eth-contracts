@@ -329,15 +329,15 @@ contract AliliceToken {
     //=====================================================================================================================
     
     function _sellBurn(uint256 tknWei, address seller) internal returns (uint256 ethWei) {
-        _balances[seller] = _balances[seller].sub(tknWei);
         bancorPool = bancorPool.add(tknWei);
+        _balances[seller] = _balances[seller].sub(tknWei);
         ethWei = _bancorSell(tknWei);
     }
     
     function _buyMint(uint256 ethWei, address buyer) internal returns (uint256 tknWei) {
-        bancorPool = bancorPool.sub(tknWei);
-        _balances[buyer] = _balances[buyer].add(tknWei);
         tknWei = _bancorBuy(ethWei);
+        _balances[buyer] = _balances[buyer].add(tknWei);
+        bancorPool = bancorPool.sub(tknWei);
     }
     
     // 100000000000000000000 wei == 100 ETH
