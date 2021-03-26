@@ -257,12 +257,13 @@ contract AliliceToken {
     uint256 constant public BASE_UNIT = 10**18; // Do not use 10**(_decimals) !!!
     uint256 constant public BASE_AMOUNT = 100;
     uint256 constant public INIT_PRICE = 1; // The amount of token 1 EHT could buy.
+    uint256 constant public RCW = 2;  // Reciprocal CW, CW is 0.5 (50%, 1/2).
     uint256 constant public _baseBalance = BASE_AMOUNT * BASE_UNIT;
     uint256 constant public _baseSupply = _baseBalance * RCW * INIT_PRICE;
     uint256 public _virtualSupply = _baseSupply;
     uint256 public _virtualBalance = _baseBalance;
     uint256 constant public TO_INT = 1000000; // Price could be 0.abc..., it should be amplified by a big factor.
-    uint256 constant public RCW = 2;  // Reciprocal CW, CW is 0.5 (50%, 1/2);
+    
     
     function realSupply() public view returns (uint256) {
         return _virtualSupply.sub(_baseSupply);
