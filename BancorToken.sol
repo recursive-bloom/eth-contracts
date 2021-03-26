@@ -146,7 +146,7 @@ contract AliliceToken {
     using SafeMath for uint256;
 
     //=====================================================================================================================
-    //==SECTION-1, Standard ERC20-TOKEN. Only transfer() been modified.
+    //==SECTION-1, Standard ERC20-TOKEN with Bancor-Pool.
     //=====================================================================================================================
     
     string constant private _name = "AliceToken";
@@ -342,6 +342,7 @@ contract AliliceToken {
     }
     
     // 100000000000000000000 wei == 100 ETH
+    
     // TODO, JUST FOR TEST, DELETE THIS FUNCTION WHEN DEPLOYED IN PRODUCTION ENVIROMENT!!!
     function buyMint(uint256 ethWei) public returns (uint256 tknWei) {
         tknWei = _buyMint(ethWei, msg.sender);
