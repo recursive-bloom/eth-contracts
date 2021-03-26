@@ -342,12 +342,12 @@ contract AliliceToken {
     
     // 100000000000000000000 wei == 100 ETH
     
-    // TODO, JUST FOR TEST, DELETE THIS FUNCTION WHEN DEPLOYED IN PRODUCTION ENVIROMENT!!!
+    // TODO, JUST FOR TEST, DELETE THIS FUNCTION WHEN DEPLOYED IN PRODUCTION ENVIROMENT !!!
     function buyMint(uint256 ethWei) public returns (uint256 tknWei) {
         tknWei = _buyMint(ethWei, msg.sender);
     }
     
-     // TODO, JUST FOR TEST, DELETE THIS FUNCTION WHEN DEPLOYED IN PRODUCTION ENVIROMENT!!!
+     // TODO, JUST FOR TEST, DELETE THIS FUNCTION WHEN DEPLOYED IN PRODUCTION ENVIROMENT !!!
     function sellBurn(uint256 tknWei) public returns (uint256 ethWei) {
         ethWei = _sellBurn(tknWei, msg.sender);
     }
