@@ -280,11 +280,11 @@ contract AliliceToken {
         }
     }
     
-    function PriceAsETH() public view returns (uint256) {
+    function PriceAsToken() public view returns (uint256) {
         return TO_INT.mul(virtualSupply).div(virtualBalance.mul(2));
     }
     
-    function PriceAsToken() public view returns (uint256) {
+    function PriceAsETH() public view returns (uint256) {
         return TO_INT.mul(virtualBalance).div(virtualSupply.div(2));
     }
     
@@ -342,15 +342,14 @@ contract AliliceToken {
     
     // 100000000000000000000 wei == 100 ETH
     
-    // TODO, JUST FOR TEST, DELETE THIS FUNCTION WHEN DEPLOYED IN PRODUCTION ENVIROMENT !!!
+    // TODO, JUST FOR TEST, DELETE THIS FUNCTION WHEN DEPLOYED IN PRODUCTION ENVIROMENT!!!
     function buyMint(uint256 ethWei) public returns (uint256 tknWei) {
         tknWei = _buyMint(ethWei, msg.sender);
     }
     
-     // TODO, JUST FOR TEST, DELETE THIS FUNCTION WHEN DEPLOYED IN PRODUCTION ENVIROMENT !!!
+     // TODO, JUST FOR TEST, DELETE THIS FUNCTION WHEN DEPLOYED IN PRODUCTION ENVIROMENT!!!
     function sellBurn(uint256 tknWei) public returns (uint256 ethWei) {
         ethWei = _sellBurn(tknWei, msg.sender);
-        // msg.sender.transfer(ethWei);
     }
     
     function() external payable {
